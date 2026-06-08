@@ -40,16 +40,7 @@
 		// Randomize number and get the corresponding index for the URL in list.
 		var gotoUrl = RedirectURLs.urls[GetRandomNumber(Groups)].url
 
-		// Perform redirection.
-		if (window.location.search == "?debug") {
-			// Debug mode: If user supplies a ?debug querystring,
-			// then only show the redirect URL, but don't actually redirect.
-			document.write("Redirect URL: " + gotoUrl);
-		} else {
-			// Redirect the user to the new URL.
-			document.location = gotoUrl;
-		}
-
+		
 		// Perform randomization and save it to a cookie.
 		function GetRandomNumber(Groups) {
 			// Has cookie been set?
