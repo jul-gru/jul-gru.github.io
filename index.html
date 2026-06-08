@@ -1,89 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Redirecting...</title>
-	<script type="text/javascript">
-		/*
-		This file randomly redirects a user to one of the URLs in a list. It is built
-		with the intent of randomization in a controlled experiment.
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
 
-		For example, create three Google Docs forms (or equivalent) and add their URLs
-		to the list below. That's it!
+  <script>
+    const RedirectURLs = [
+      "https://jatos.mindprobe.eu/publix/hStXJ4yyEog/",
+      "https://jatos.mindprobe.eu/publix/n7SOOsGBLbb/",
+      "https://jatos.mindprobe.eu/publix/RVJXxrwF0Xe/",
+      "https://jatos.mindprobe.eu/publix/qaJsMdPV4iq/",
+      "https://jatos.mindprobe.eu/publix/QKj6XmN99wQ/",
+      "https://jatos.mindprobe.eu/publix/ZF11NgGLOql/"
+    ];
 
-		The user is then automatically and randomly assigned to one of the URLs when
-		the user visits this file. If the user decides to close and reopen the browser,
-		the user is still redirected to the same URL since a cookie is saved in the
-		user's browser.
-		
-		Peter M. Dahlgren
-		@peterdalle
-		peterdahlgren.com
-		2016-01-05
-		*/
-		
-		// List of URLs (two or more) for the experimental treatment and control groups.
-		var RedirectURLs = {
-			"urls" : [
-				{ "url" : "https://jatos.mindprobe.eu/publix/hStXJ4yyEog/" },
-				{ "url" : "https://jatos.mindprobe.eu/publix/n7SOOsGBLbb/" },
-				{ "url" : "https://jatos.mindprobe.eu/publix/RVJXxrwF0Xe/" },
-				{ "url" : "https://jatos.mindprobe.eu/publix/qaJsMdPV4iq/" },
-				{ "url" : "https://jatos.mindprobe.eu/publix/QKj6XmN99wQ/" },
-				{ "url" : "https://jatos.mindprobe.eu/publix/ZF11NgGLOql/" }
-			]
-		}
+    const cookieName = "rnd_osweb_experiment_1";
 
-		// Count the number of URLs in list.
-		var Groups = RedirectURLs.urls.length;
+    function getCookie(name) {
+      const cookies = document.cookie.split(";").map(c => c.trim());
+      for (const c of cookies) {
+        if (c.startsWith(name + "=")) {
+          return c.substring(name.length + 1);
+        }
+      }
+      return "";
+    }
 
-		// Randomize number and get the corresponding index for the URL in list.
-		var gotoUrl = RedirectURLs.urls[GetRandomNumber(Groups)].url
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
+    }
 
-		// Perform redirection.
-		if (window.location.search == "?debug") {
-			// Debug mode: If user supplies a ?debug querystring,
-			// then only show the redirect URL, but don't actually redirect.
-			document.write("Redirect URL: " + gotoUrl);
-		} else {
-			// Redirect the user to the new URL.
-			document.location = gotoUrl;
-		}
+    function getRandomIndex() {
+      let index = parseInt(getCookie(cookieName), 10);
 
-		// Perform randomization and save it to a cookie.
-		function GetRandomNumber(Groups) {
-			// Has cookie been set?
-			var rndIndex = null;
-			if (GetCookie() != "") {
-				// Yes, get randomization from cookie.
-				rndIndex = GetCookie()
-			} else {
-				// No, set random value to cookie.
-				rndIndex = Math.floor((Math.random() * Groups));
-				SetCookie(rndIndex, 30) // Set cookie for 30 days.
-			}
-			return rndIndex
-		}
+      // wichtig: alten/kaputten Cookie verwerfen
+      if (Number.isNaN(index) || index < 0 || index >= RedirectURLs.length) {
+        index = Math.floor(Math.random() * RedirectURLs.length);
+        setCookie(cookieName, index, 30);
+      }
 
-		// Set cookie with randomization value.
-		function SetCookie(CookieValue, DaysUntilExpire) {
-			var d = new Date();
-			d.setTime(d.getTime() + (DaysUntilExpire * 24 * 60 * 60 * 1000));
-			document.cookie = "rnd=" + CookieValue + ";expires=" + d.toUTCString();
-		}
+      return index;
+    }
 
-		// Get cookie with randomization value. Return empty string if not set.
-		function GetCookie() {
-			var ca = document.cookie.split(';');
-			for(var i = 0; i < ca.length; i++) {
-				var c = ca[i];
-				while (c.charAt(0) == ' ') c = c.substring(1);
-				if (c.indexOf("rnd=") == 0) return c.substring(4, c.length);
-			}
-			return "";
-		}
-	</script>
+    const index = getRandomIndex();
+    const gotoUrl = RedirectURLs[index];
+
+    if (window.location.search === "?debug") {
+      document.write("Redirect index: " + index + "<br>URL: " + gotoUrl);
+    } else {
+      window.location.replace(gotoUrl);
+    }
+  </script>
 </head>
 <body>
+  Redirecting...
 </body>
 </html>
